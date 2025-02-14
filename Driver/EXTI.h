@@ -6,12 +6,12 @@
 
 
 typedef struct {
-    BIT32 IMR;
-    BIT32 EMR;
-    BIT32 RTSR;
-    BIT32 FTSR;
-    BIT32 SWIER;
-    BIT32 PR;
+    __BIT32 IMR;
+    __BIT32 EMR;
+    __BIT32 RTSR;
+    __BIT32 FTSR;
+    __BIT32 SWIER;
+    __BIT32 PR;
 }EXTI;
 
 #define myEXTI ((EXTI *) 0x40010400)

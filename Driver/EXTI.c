@@ -7,7 +7,7 @@ void EXTI0_IRQHandler(void) {
         printf("Interupt line 0\r\n");
         InteruptND();
         // Ngắt bit pedding để đón nhận interupt tiếp theo
-        myEXTI->PR.REGISTER |= (1<<6);   
+        myEXTI->PR.REG |= (1<<6);   
     }
 }
 

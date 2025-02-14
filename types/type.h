@@ -4,7 +4,7 @@
 
 
 typedef union{
-    volatile uint32_t REGISTER;
+    volatile uint32_t REG;
     struct {
         uint32_t BIT0:   1;
         uint32_t BIT1:   1;
@@ -40,11 +40,11 @@ typedef union{
         uint32_t BIT31:  1;
         uint32_t BIT32:  1;
     }BITS;
-} BIT32;
+} __BIT32;
 
 
 typedef union{
-    volatile uint8_t REGISTER;
+    volatile uint8_t REG;
     struct {
         uint8_t BIT0:   1;
         uint8_t BIT1:   1;
@@ -55,8 +55,8 @@ typedef union{
         uint8_t BIT6:   1;
         uint8_t BIT7:   1;
     }BITS;
-} BIT8;
+} __BIT8;
 
 
 
-#endif
+#endif 
