@@ -64,9 +64,10 @@ typedef struct{
 
 
     
-}AFIO ;
+}_AFIO ;
 
-
+#define ADRESS_AFIO     0x40010000
+#define AFIO            ((_AFIO*)(ADRESS_AFIO))
 
 
 #endif

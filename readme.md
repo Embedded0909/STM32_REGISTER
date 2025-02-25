@@ -9,16 +9,17 @@ Cách học:
 | CHƯƠNG    | NỘI DUNG            |
 -----------------------------------
 | CHƯƠNG 00 | GIỚI THIỆU          |
-| CHƯƠNG 01 | RCC                 |
-| CHƯƠNG 02 | GPIO                |
-| CHƯƠNG 03 | AFIO                |
-| CHƯƠNG 04 | EXTI                |
-| CHƯƠNG 05 | ADC                 |
-| CHƯƠNG 06 | TIMER               |
-| CHƯƠNG 07 | PWM                 |
-| CHƯƠNG 08 | UART                |
-| CHƯƠNG 09 | I2C                 |
-| CHƯƠNG 10 | SPI                 |
+| CHƯƠNG 01 | TÀI LIỆU            |
+| CHƯƠNG 02 | RCC                 |
+| CHƯƠNG 03 | GPIO                |
+| CHƯƠNG 04 | AFIO                |
+| CHƯƠNG 05 | EXTI                |
+| CHƯƠNG 06 | ADC                 |
+| CHƯƠNG 07 | TIMER               |
+| CHƯƠNG 08 | PWM                 |
+| CHƯƠNG 09 | UART                |
+| CHƯƠNG 10 | I2C                 |
+| CHƯƠNG 11 | SPI                 |
 ----------------------------------- 
 ```
 
@@ -79,22 +80,63 @@ GPIOA với kiểu dữ liệu là GPIO_Typedef mà mình muốn variable GPIOA 
 Khi bạn làm việc với phần cứng hoặc các tài nguyên mà giá trị của chúng có thể thay đổi ngoài tầm kiểm soát của chương trình (như thanh ghi của vi điều khiển,...) khi đó thì compiler có thể tối ưu hóa biến này đi
 
 volatile ở đây là để compiler xác định nó là biến có thể bị thay đổi bất cứ lúc nào và không clear nó đi
-## Chương 01: RCC
-### 1.1 Cách config sysclock lên tối đa 72Mhz
+## Chương 01: TÀI LIỆU
+
+### PHẦN MỀM
+
+- Keilc v5 ARM   
+Link: https://www.keil.com/download/
+- Datasheet STM32F1 
+Link: https://www.st.com/resource/en/datasheet/cd00161566.pdf 
+- STM32F1 reference manual
+Link: https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf 
+
+
+### PHẦN CỨNG
+
+- STM32F103C8T6 Kit
+![alt text](image/stm32.png)  
+
+- STLink V2 (Cài cả driver cho stlink)
+![alt text](image/stlink.png)  
+
+### MEMORY MAP
+
+![alt text](image/memory.png)
+
+
+## Chương 02: RCC
+
+😒 Mục tiêu:
++ Đưa clock lên tối đa 72Mhz
++ Bật clock cho các GPIO
+
+### 1. Giới thiệu
+
+Clock là một phần quan trọng của vi điều khiển. Bất kì 1 ngoại vi nào cũng cần clock  để hoạt động.
+
+⚠️ Chú ý
+```
+- Khi có thạch anh ngoài thì tốc độ tối đa sẽ là 72Mhz. ( Thạch anh ngoại )
+- Khi không có thạch anh ngoài thì tốc độ tối đa sẽ là 64Mhz. ( Thạch anh nội )
+- Tốc độ mặc định sẽ là 8Mhz nếu không cấu hình gì.
+```
+
+### 2. Cách config sysclock lên tối đa 72Mhz
 ![Alt text](image/RCC_01.png)
 
 Các bước config lên 72 Mhz
 ```cpp
-        // Bước 01: Enable HSE
-	// Bước 02: Config Flash 
-	// Bước 03: PLL x9	
-	// Bước 04: Div clock
-	// Bước 05: PLL as SysClk
+         Bước 01: Enable HSE
+	 Bước 02: Config Flash 
+	 Bước 03: PLL x9	
+	 Bước 04: Div clock
+	 Bước 05: PLL as SysClk
 ```
 
-### 1.2 Các thanh ghi để config sysclock lên 72Mhz
-#### Thanh ghi CR
-![alt text](image-1.png)
+### 3. Các thanh ghi để config sysclock lên 72Mhz
+#### 🎁 Thanh ghi CR
+![alt text](image/CR.png)
 
 ```cpp
 bit 16: Cấu hình system hoạt động theo HSE
@@ -103,7 +145,7 @@ bit 24: Cấu hình theo PLL
 bit 25: Đợi cho PLL hoạt động 
 ```
 
-#### Thanh ghi CFGR
+#### 🎁 Thanh ghi CFGR
 ![alt text](image/CFGR.png)
 
 ```cpp
@@ -121,6 +163,10 @@ SWS: Chờ cho quá trình SW hoàn thành
 Bản thân trong vi điều khiên có một khái niệm flash
 Khi bạn chọn SYSCLK chạy ở 72 MHz, điều này ảnh hưởng đến tốc độ của nhiều thành phần trong hệ thống, bao gồm tốc độ truy xuất bộ nhớ Flash 
 --> Chính vì vậy chúng ta cần config trong 1 thanh ghi nữa về FLASH (FLASH_ACR)
+
+#### 🎁 Thanh ghi FLASH_ACR
+![alt text](image/flash.png)
+
 ```cpp
 Bits 2:0 LATENCY: Latency
 000 Zero wait state, if 0 <= SYSCLK <= 24 MHz
@@ -128,14 +174,14 @@ Bits 2:0 LATENCY: Latency
 010 Two wait states, if 48 MHz < SYSCLK <= 72 MHz
 
 ```
-### 1.3 Bật clock của các ngoại vi
+### 4. Bật clock của các ngoại vi
 
-#### Clock APB2
+#### APB2
 Ví dụ các bạn cần bật Clock của GPIOA thì cần đến thanh ghi này
 ![alt text](image/APB2.png)
 Đơn giản chỉ cần bật bit IOPA = 1 là được
 
-## Chương 02: GPIO
+## Chương 03: GPIO
 
 😒 Mục tiêu:
 + Xác thực tính đúng đắn của RCC
@@ -151,20 +197,20 @@ Bước 03: Xuất tín hiệu điện áp mức HIGH, LOW để blink led
 
 ```
 
-### 2.1 Define các thanh ghi
-#### 2.1.1 Thanh ghi CRL
+### 1 Một vài thanh ghi
+#### 1.1 🎁 Thanh ghi CRL
 
 ![alt text](image/CRL.png)
 
 Thanh ghi CRL dùng để cấu hình IO, các Mode cho các Pin từ 0 đến 7
 
-#### 2.1.2 Thanh ghi CRH
+#### 1.2 🎁 Thanh ghi CRH
 
 ![alt text](image/CRH.png)
 
 Thanh ghi CRH dùng để cấu hình IO, các Mode cho các Pin từ 8 đến 15
 
-#### 2.1.3 Thanh ghi ODR
+#### 1.3 🎁 Thanh ghi ODR
 
 ![alt text](image/ODR.png)
 
@@ -174,8 +220,33 @@ Thanh ghi dùng để xuất tín hiệu ra chân Pin
 
 Alternate Functions - Nó cung cấp các chức năng thay thế cho các chân GPIO như
 - UART, SPI, I2C, EXTI,...
-### 3.1 
 
+Mở datasheet STM32F1 ta có thể thấy bảng sau:
+![alt text](image/afio1.png)
+
+Các alternate function là những chức năng thay thế chân
+Bình thường chúng ta sẽ không hay sử dụng những chức năng thay thế này mà thường sẽ dùng mặc định các chân có hỗ trợ sẵn luôn cho tiện
+
+```cpp
+    Ví dụ có thể thấy tại PA13 mặc định sẽ là chân SWDIO
+    Các bạn có thấy chân này quen không?
+    Bản chất chân này được nối khi bạn dùng để debug hoặc nạp code với STLink
+    Vì vậy tại chân này nếu muốn dùng GPIO PA13 thì phải dùng AFIO
+    Tuy nhiên thì ít ai lại sử dụng như vậy và thường sẽ xử lý giải pháp như sau
+    + Dùng 1 chân GPIO khác chưa sử dụng
+    + Nếu cần thêm nhiều chân để đọc dữ liệu thì sử dụng module khác sau đó dùng các giao thức để truyền nhận giữa các module
+```
+
+⚠️ Tuy nhiên chúng ta vẫn viết driver của AFIO ra để lúc sau nếu cần gì thì chúng ta vẫn sẽ sử dụng
+
+## Chương 04 INTERUPT
+
+![alt text](image/NVICCC.png)
+
+Bản chất trong core chúng ta sẽ tồn tại một thứ gọi là NVIC
+
+Sau đó thì bất cứ interupt (ngắt) nào cũng sẽ đi qua NVIC này
+Nó giúp core detect được đây là thể loại ngắt gì (GPIO interrupt, I2C interrupt, UART interrupt,...) và thực thi function interrupt đó.
 
 ## I. Nested vectored interrupt controller (NVIC)
 
@@ -221,3 +292,24 @@ Bản chất khi một chân ngắt được detect, bit tương ứng với ch�
 Vì vậy để các ngắt khác có thể được thực thi, thì sau khi thực hiện ngắt hiện tại xong, chúng ta cần clear
 bit tại thanh ghi này bằng cách write 1
 ![alt text](image/image2.png)
+
+
+
+
+
+
+### NỘI DUNG
+
+```cpp
+
+Bài 1: KIẾN THỨC NỀN TẢNG
+Bài 2: CHUYỂN BỊ TÀI LIỆU
+Bài 3: DRIVER RCC
+Bài 4: FUNCTION ENABLE 72MHZ, ENABLE PORT CLOCK
+Bài 5: DRIVER GPIO
+Bài 6: FUNCTION BLINK LED
+Bài 7: DRIVER 
+Bài 8:
+Bài 9:
+
+```
