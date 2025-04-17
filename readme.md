@@ -80,7 +80,7 @@ GPIOA với kiểu dữ liệu là GPIO_Typedef mà mình muốn variable GPIOA 
 Khi bạn làm việc với phần cứng hoặc các tài nguyên mà giá trị của chúng có thể thay đổi ngoài tầm kiểm soát của chương trình (như thanh ghi của vi điều khiển,...) khi đó thì compiler có thể tối ưu hóa biến này đi
 
 volatile ở đây là để compiler xác định nó là biến có thể bị thay đổi bất cứ lúc nào và không clear nó đi
-## Chương 01: TÀI LIỆU
+## Chương 01: TÀI LIỆU VÀ KIẾN THỨC BASE
 
 ### PHẦN MỀM
 
@@ -104,6 +104,29 @@ Link: https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f1
 
 ![alt text](image/memory.png)
 
+### ADDRESS BASE VÀ OFFSET
+
+Một ví dụ nhỏ:
+
+ADD BASE
+
+![alt text](image/base.png)
+
+ADDRESS OFFSET
+
+![alt text](image/offet1.png)
+![alt text](image/offset2.png)
+
+```cpp
+Địa chỉ thực tế = Địa chỉ base + Địa chỉ offet
+
+Ví dụ muốn lấy ra thanh ghi CRH của GPIOA
+
+-> Địa chỉ là:
+
+0x4001 0800 + 0x04 = 0x4001 0804
+
+```
 
 ## Chương 02: RCC
 
