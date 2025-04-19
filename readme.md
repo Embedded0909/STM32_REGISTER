@@ -128,6 +128,45 @@ Ví dụ muốn lấy ra thanh ghi CRH của GPIOA
 
 ```
 
+## Buổi 01: thử blink led với thanh ghi basic
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+//----------RCC-----------------------------
+#define RCC_ADD_BASE  0x40021000UL
+#define RCC_ADD_APB2ENR   (RCC_ADD_BASE + 0x18)
+#define APB2ENR    (*((volatile uint32_t*)RCC_ADD_APB2ENR))
+
+
+//----------GPIO----------------------------
+#define GPIOA_ADD_BASE  0x40010800UL
+#define GPIOA_ADD_CRH				(GPIOA_ADD_BASE + 0x00)
+#define GPIOA_ADD_ODR				(GPIOA_ADD_BASE + 0x0C)
+#define GPIOACRH   (*((volatile uint32_t*)GPIOA_ADD_CRH))
+#define GPIOODR    (*((volatile uint32_t*)GPIOA_ADD_ODR))
+
+void mDelay(uint32_t time);
+void mDelay(volatile uint32_t time){
+	while(time--);
+}
+
+int main(){
+	
+//Config RCC and GPIO A OUTPUT PUSH PULL
+	APB2ENR = 0x00000004;
+	GPIOACRH = 0x00000003;
+	while(1){
+		GPIOODR |= (1 << 0);
+		mDelay(10000000);
+		GPIOODR &= ~(1 << 0); 
+		mDelay(10000000);
+	}
+}
+
+
+```
+
 ## Chương 02: RCC
 
 😒 Mục tiêu:
